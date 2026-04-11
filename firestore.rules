@@ -140,7 +140,7 @@ service cloud.firestore {
     }
 
     match /tasks/{taskId} {
-      allow read: if isAuthenticated(); // Tasks are shared in this app
+      allow read: if isDocOwner() || isAdmin();
       allow create: if isAuthenticated() && isValidTask(request.resource.data);
       allow update: if isAuthenticated() && isValidTask(request.resource.data) && (isDocOwner() || isAdmin());
       allow delete: if isAuthenticated() && (isDocOwner() || isAdmin());

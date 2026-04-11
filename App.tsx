@@ -96,7 +96,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!user || !isAuthReady || !isFirebaseConfigured) return;
 
-    const tasksQuery = query(collection(db, 'tasks')); // Shared tasks for now
+    const tasksQuery = query(collection(db, 'tasks'), where('authorUid', '==', user.uid));
     const unsubscribeTasks = onSnapshot(tasksQuery, (snapshot) => {
       const tasksData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Task));
       setTasks(tasksData);
