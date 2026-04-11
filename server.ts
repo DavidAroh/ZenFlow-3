@@ -1,5 +1,4 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
 import path from "path";
 import axios from "axios";
 import cookieParser from "cookie-parser";
@@ -19,7 +18,19 @@ app.use((req, res, next) => {
 // Spotify Config
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const REDIRECT_URI = process.env.APP_URL ? `${process.env.APP_URL}/auth/spotify/callback` : 'http://localhost:3000/auth/spotify/callback';
+const APP_URL = process.env.APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
+const REDIRECT_URI = APP_URL ? `${APP_URL}/auth/spotify/callback` : 'http://localhost:3000/auth/spotify/callback';
+
+const checkConfig = () => {
+  if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
+    return {
+      valid: false,
+      error: "Spotify configuration missing",
+      details: "SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET must be set in environment variables."
+    };
+  }
+  return { valid: true };
+};
 
 console.log("Spotify Config Status:", {
   hasClientId: !!SPOTIFY_CLIENT_ID,
@@ -34,17 +45,16 @@ app.get("/api/spotify/config-check", (req, res) => {
     hasClientSecret: !!SPOTIFY_CLIENT_SECRET,
     redirectUri: REDIRECT_URI,
     nodeEnv: process.env.NODE_ENV,
-    appUrl: process.env.APP_URL
+    appUrl: process.env.APP_URL,
+    vercelUrl: process.env.VERCEL_URL
   });
 });
 
 app.get("/api/auth/spotify/url", (req, res) => {
-  if (!SPOTIFY_CLIENT_ID) {
-    console.error("Spotify Client ID is missing from environment variables");
-    return res.status(500).json({ 
-      error: "Spotify Client ID not configured",
-      details: "Please set SPOTIFY_CLIENT_ID in your environment variables (e.g., in Vercel settings)."
-    });
+  const config = checkConfig();
+  if (!config.valid) {
+    console.error(config.error, config.details);
+    return res.status(500).json(config);
   }
   const scope = "user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing";
   const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${SPOTIFY_CLIENT_ID}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
@@ -131,6 +141,9 @@ const refreshSpotifyToken = async (refreshToken: string) => {
 };
 
 app.get("/api/spotify/me", async (req, res) => {
+  const config = checkConfig();
+  if (!config.valid) return res.status(500).json(config);
+
   let token = req.cookies.spotify_access_token;
   const refreshToken = req.cookies.spotify_refresh_token;
 
@@ -179,6 +192,9 @@ app.get("/api/spotify/me", async (req, res) => {
 });
 
 app.get("/api/spotify/player", async (req, res) => {
+  const config = checkConfig();
+  if (!config.valid) return res.status(500).json(config);
+
   let token = req.cookies.spotify_access_token;
   const refreshToken = req.cookies.spotify_refresh_token;
 
@@ -226,6 +242,9 @@ app.get("/api/spotify/player", async (req, res) => {
 
 // Playback Controls
 const spotifyAction = async (req: any, res: any, method: 'post' | 'put', endpoint: string) => {
+  const config = checkConfig();
+  if (!config.valid) return res.status(500).json(config);
+
   let token = req.cookies.spotify_access_token;
   const refreshToken = req.cookies.spotify_refresh_token;
 
@@ -271,9 +290,20 @@ app.post("/api/spotify/logout", (req, res) => {
   res.json({ success: true });
 });
 
+// Global error handler
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("Unhandled Server Error:", err);
+  res.status(500).json({
+    error: "Internal Server Error",
+    message: err.message,
+    path: req.url
+  });
+});
+
 // Vite middleware for development
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -281,15 +311,21 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*all', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+    if (require('fs').existsSync(distPath)) {
+      app.use(express.static(distPath));
+      app.get('*all', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    }
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  }
 }
 
 startServer();
+
+export default app;

@@ -27,6 +27,7 @@ const FocusTimer: React.FC = () => {
   const [spotifyUser, setSpotifyUser] = useState<SpotifyUser | null>(null);
   const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null);
   const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
+  const [spotifyError, setSpotifyError] = useState<string | null>(null);
   const [isDeepWork, setIsDeepWork] = useState(true);
   
   // Fix: Use ReturnType<typeof setTimeout> instead of NodeJS.Timeout to avoid namespace issues in browser environment
@@ -36,6 +37,7 @@ const FocusTimer: React.FC = () => {
     try {
       const userRes = await axios.get('/api/spotify/me');
       setSpotifyUser(userRes.data);
+      setSpotifyError(null);
       
       const playerRes = await axios.get('/api/spotify/player');
       if (playerRes.data && playerRes.data.item) {
@@ -46,6 +48,9 @@ const FocusTimer: React.FC = () => {
     } catch (error: any) {
       if (error.response?.status !== 401) {
         console.error("Spotify fetch error:", error);
+        if (error.response?.status === 500) {
+          setSpotifyError(error.response.data?.error || "Server Error");
+        }
       }
       setSpotifyUser(null);
     }
@@ -258,7 +263,16 @@ const FocusTimer: React.FC = () => {
         </div>
 
         <div className="mt-auto p-4 rounded-3xl bg-surface-dark border border-border-dark flex flex-col gap-4">
-           {spotifyUser ? (
+            {spotifyError && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <p className="text-[10px] text-red-400 font-bold leading-tight">
+                  {spotifyError === 'Spotify configuration missing' 
+                    ? "Spotify credentials are not set in Vercel. Please add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to your environment variables."
+                    : `Error: ${spotifyError}`}
+                </p>
+              </div>
+            )}
+            {spotifyUser ? (
              <>
                <div className="flex items-center justify-between">
                  <div className="flex items-center gap-3">
