@@ -66,10 +66,10 @@ const Settings: React.FC<SettingsProps> = ({ theme, onToggleTheme }) => {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <header className="mb-12">
-        <h1 className="text-4xl font-black text-text-main mb-2 tracking-tight">Settings</h1>
-        <p className="text-text-secondary">Manage your profile and external integrations.</p>
+    <div className="p-4 md:p-8 max-w-4xl mx-auto">
+      <header className="mb-8 md:mb-12">
+        <h1 className="text-3xl md:text-4xl font-black text-text-main mb-2 tracking-tight leading-tight">Settings</h1>
+        <p className="text-text-secondary text-sm md:text-base">Manage your profile and external integrations.</p>
       </header>
 
       {message && (

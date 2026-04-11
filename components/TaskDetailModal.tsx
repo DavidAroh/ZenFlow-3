@@ -122,29 +122,29 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose, onSave
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-border-dark flex items-center justify-between bg-surface-darker">
+        <div className="p-6 border-t border-border-dark flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-darker">
           <button 
             onClick={() => {
               if (window.confirm('Are you sure you want to delete this task?')) {
                 onDelete(task.id);
               }
             }}
-            className="flex items-center gap-2 px-4 py-2.5 text-red-500 hover:bg-red-500/10 rounded-xl transition-all font-bold text-sm"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 text-red-500 hover:bg-red-500/10 rounded-xl transition-all font-bold text-sm"
           >
             <span className="material-symbols-outlined text-[20px]">delete</span>
             Delete Task
           </button>
           
-          <div className="flex items-center gap-3">
+          <div className="w-full sm:w-auto flex items-center gap-3">
             <button 
               onClick={onClose}
-              className="px-6 py-2.5 rounded-xl text-text-secondary font-bold hover:bg-primary/10 transition-all"
+              className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-text-secondary font-bold hover:bg-primary/10 transition-all"
             >
               Cancel
             </button>
             <button 
               onClick={() => onSave(editedTask)}
-              className="px-8 py-2.5 bg-primary text-background-dark font-black rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
+              className="flex-1 sm:flex-none px-8 py-2.5 bg-primary text-background-dark font-black rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
             >
               Save Changes
             </button>

@@ -43,14 +43,14 @@ const WellnessHub: React.FC<WellnessHubProps> = ({ entries, onLogMood }) => {
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-8">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black text-text-main tracking-tight mb-2">Wellness Hub</h1>
-          <p className="text-text-secondary">Track your mental state and energy levels to optimize your flow.</p>
+          <h1 className="text-3xl md:text-4xl font-black text-text-main tracking-tight mb-2">Wellness Hub</h1>
+          <p className="text-text-secondary text-sm md:text-base">Track your mental state and energy levels to optimize your flow.</p>
         </div>
         <button 
           onClick={onLogMood}
-          className="px-6 py-3 bg-primary text-background-dark font-black rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+          className="w-full md:w-auto px-6 py-3 bg-primary text-background-dark font-black rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
         >
           <span className="material-symbols-outlined">add_circle</span>
           LOG DAILY CHECK-IN
@@ -92,7 +92,7 @@ const WellnessHub: React.FC<WellnessHubProps> = ({ entries, onLogMood }) => {
               </div>
             </div>
             
-            <div className="h-[300px] w-full">
+            <div className="h-[250px] md:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>

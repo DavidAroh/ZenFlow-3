@@ -327,8 +327,8 @@ const App: React.FC = () => {
         );
       case AppView.LOGS:
         return (
-          <div className="p-8 max-w-4xl mx-auto">
-            <h2 className="text-3xl font-black mb-8">Work History</h2>
+          <div className="p-4 md:p-8 max-w-4xl mx-auto">
+            <h2 className="text-3xl font-black mb-8 text-text-main">Work History</h2>
             <div className="space-y-4">
               {logs.length === 0 ? (
                 <div className="text-center p-12 bg-surface-dark border border-border-dark rounded-xl text-text-secondary">
@@ -336,9 +336,9 @@ const App: React.FC = () => {
                 </div>
               ) : (
                 logs.map(log => (
-                  <div key={log.id} className="p-6 bg-surface-dark border border-border-dark rounded-xl flex justify-between items-center">
+                  <div key={log.id} className="p-4 md:p-6 bg-surface-dark border border-border-dark rounded-xl flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                     <div className="flex items-center gap-4">
-                      <div className={`size-10 rounded-full flex items-center justify-center ${log.isDeepWork ? 'bg-primary/20 text-primary' : 'bg-text-secondary/10 text-text-secondary'}`}>
+                      <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${log.isDeepWork ? 'bg-primary/20 text-primary' : 'bg-text-secondary/10 text-text-secondary'}`}>
                         <span className="material-symbols-outlined">{log.isDeepWork ? 'eco' : 'timer'}</span>
                       </div>
                       <div>
@@ -346,11 +346,11 @@ const App: React.FC = () => {
                         <p className="text-text-secondary text-sm">{log.startTime} - {log.endTime || 'Active'}</p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="flex sm:flex-col justify-between sm:text-right items-center sm:items-end">
                       <p className={`text-sm font-black uppercase ${log.status === 'overworked' ? 'text-red-400' : 'text-primary'}`}>
                         {log.status}
                       </p>
-                      <p className="text-text-main font-mono">{log.duration || '--'}</p>
+                      <p className="text-text-main font-mono text-sm">{log.duration || '--'}</p>
                     </div>
                   </div>
                 ))

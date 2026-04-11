@@ -178,7 +178,7 @@ const FocusTimer: React.FC = () => {
 
       <div className="flex-1 flex flex-col items-center justify-center p-8 z-10">
         <div className="relative flex items-center justify-center mb-12">
-          <svg className="size-[320px] md:size-[480px] -rotate-90 transform timer-glow" viewBox="0 0 100 100">
+          <svg className="size-[280px] sm:size-[320px] md:size-[480px] -rotate-90 transform timer-glow" viewBox="0 0 100 100">
             <circle className="text-border-dark" cx="50" cy="50" fill="none" r="45" stroke="currentColor" strokeWidth="2" />
             <circle 
               className="text-primary transition-all duration-300" 
@@ -188,14 +188,14 @@ const FocusTimer: React.FC = () => {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <span className="text-7xl md:text-9xl font-thin tracking-tighter tabular-nums text-text-main">
+            <span className="text-6xl sm:text-7xl md:text-9xl font-thin tracking-tighter tabular-nums text-text-main">
               {formatTime(timeLeft)}
             </span>
-            <span className="mt-4 text-xs font-black tracking-widest uppercase text-primary/80">Growth Mode</span>
+            <span className="mt-4 text-[10px] md:text-xs font-black tracking-widest uppercase text-primary/80">Growth Mode</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col sm:flex-row items-center gap-6">
           {!isActive && (
             <div className="flex items-center gap-2 bg-surface-dark rounded-full p-1 border border-border-dark">
               <button 
@@ -213,19 +213,21 @@ const FocusTimer: React.FC = () => {
               </button>
             </div>
           )}
-          <button 
-            onClick={toggleTimer}
-            className="flex items-center gap-2 h-16 px-10 rounded-full bg-surface-dark text-text-main font-bold hover:bg-border-dark transition-all active:scale-95 shadow-xl shadow-black/10"
-          >
-            <span className="material-symbols-outlined">{isActive ? 'pause' : 'play_arrow'}</span>
-            <span>{isActive ? 'Pause' : 'Start Focus'}</span>
-          </button>
-          <button 
-            onClick={resetTimer}
-            className="flex items-center justify-center size-16 rounded-full border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 transition-all"
-          >
-            <span className="material-symbols-outlined">refresh</span>
-          </button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={toggleTimer}
+              className="flex items-center gap-2 h-14 md:h-16 px-8 md:px-10 rounded-full bg-surface-dark text-text-main font-bold hover:bg-border-dark transition-all active:scale-95 shadow-xl shadow-black/10"
+            >
+              <span className="material-symbols-outlined">{isActive ? 'pause' : 'play_arrow'}</span>
+              <span>{isActive ? 'Pause' : 'Start Focus'}</span>
+            </button>
+            <button 
+              onClick={resetTimer}
+              className="flex items-center justify-center size-14 md:size-16 rounded-full border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 transition-all"
+            >
+              <span className="material-symbols-outlined">refresh</span>
+            </button>
+          </div>
         </div>
       </div>
 

@@ -46,7 +46,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onSelectTask, onCreateTask
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      <div className="flex justify-between items-center mb-6 px-8 pt-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-4 md:px-8 pt-4">
         <div>
           <h1 className="text-2xl font-black text-text-main">Tasks</h1>
           <p className="text-xs text-text-secondary">Manage your focus and stress levels.</p>
@@ -55,7 +55,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onSelectTask, onCreateTask
           <button 
             onClick={handleAnalyze}
             disabled={isAnalyzing}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-lg hover:bg-purple-500/30 transition-all disabled:opacity-50 text-xs font-bold"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-lg hover:bg-purple-500/30 transition-all disabled:opacity-50 text-xs font-bold"
           >
             <span className="material-symbols-outlined text-sm">psychology</span>
             {isAnalyzing ? 'Analyzing...' : 'AI Prioritizer'}
@@ -64,7 +64,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onSelectTask, onCreateTask
       </div>
 
       {aiRecommendation && (
-        <div className="mx-8 mb-6 p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-start gap-4 animate-in fade-in slide-in-from-top-4">
+        <div className="mx-4 md:mx-8 mb-6 p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-start gap-4 animate-in fade-in slide-in-from-top-4">
           <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
             <span className="material-symbols-outlined text-purple-400 text-sm">auto_awesome</span>
           </div>

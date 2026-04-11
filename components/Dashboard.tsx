@@ -61,22 +61,22 @@ const Dashboard: React.FC<DashboardProps> = ({ insight, onStartFocus, userName, 
   return (
     <div className="max-w-[1400px] w-full mx-auto p-4 md:p-8 flex flex-col gap-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="flex flex-col gap-1">
-          <h2 className="text-4xl font-black tracking-tight text-text-main">Good Morning, {userName}</h2>
-          <p className="text-text-secondary text-lg">Here's your wellness report for today.</p>
+          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-text-main leading-tight">Good Morning, {userName}</h2>
+          <p className="text-text-secondary text-base md:text-lg">Here's your wellness report for today.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-dark border border-border-dark hover:bg-border-dark transition-all">
-            <span className="material-symbols-outlined text-text-main">calendar_today</span>
+        <div className="flex flex-wrap gap-3">
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-surface-dark border border-border-dark hover:bg-border-dark transition-all">
+            <span className="material-symbols-outlined text-text-main text-xl">calendar_today</span>
             <span className="text-text-main text-sm font-bold">Today</span>
           </button>
           <button 
             onClick={onStartFocus}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-background-dark font-black transition-all shadow-lg shadow-primary/20"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-background-dark font-black transition-all shadow-lg shadow-primary/20"
           >
-            <span className="material-symbols-outlined font-bold">play_arrow</span>
-            <span>START FOCUS</span>
+            <span className="material-symbols-outlined font-bold text-xl">play_arrow</span>
+            <span className="whitespace-nowrap">START FOCUS</span>
           </button>
         </div>
       </div>
@@ -166,7 +166,7 @@ const Dashboard: React.FC<DashboardProps> = ({ insight, onStartFocus, userName, 
             </div>
           </div>
         </div>
-        <div className="w-full h-80">
+        <div className="w-full h-64 md:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={displayData}>
               <defs>
@@ -197,22 +197,22 @@ const Dashboard: React.FC<DashboardProps> = ({ insight, onStartFocus, userName, 
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 relative overflow-hidden rounded-2xl border border-border-dark min-h-[300px] flex">
+        <div className="lg:col-span-2 relative overflow-hidden rounded-2xl border border-border-dark min-h-[350px] md:min-h-[300px] flex">
            <div className="absolute inset-0 bg-cover bg-center" style={{backgroundImage: `url(https://picsum.photos/seed/forest/1200/600)`}}></div>
-           <div className="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/70 to-transparent"></div>
-           <div className="relative z-10 p-8 flex flex-col justify-center gap-6 max-w-xl">
+           <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-background-dark via-background-dark/80 to-transparent"></div>
+           <div className="relative z-10 p-6 md:p-8 flex flex-col justify-center gap-6 max-w-xl">
               <div className="flex items-center gap-2 text-primary">
                  <span className="material-symbols-outlined font-bold">psychology</span>
                  <span className="text-sm font-black uppercase tracking-widest">AI DAILY INSIGHT</span>
               </div>
-              <h3 className="text-3xl font-black text-text-main leading-tight">
+              <h3 className="text-2xl md:text-3xl font-black text-text-main leading-tight">
                  {insight ? insight.content : "Based on your activity patterns, your peak focus window is between 9 AM and 11 AM today."}
               </h3>
-              <div className="flex gap-4">
-                 <button className="px-6 py-3 bg-primary text-background-dark font-black rounded-xl hover:bg-primary-dark transition-all">
+              <div className="flex flex-wrap gap-4">
+                 <button className="flex-1 md:flex-none px-6 py-3 bg-primary text-background-dark font-black rounded-xl hover:bg-primary-dark transition-all">
                     VIEW TIPS
                  </button>
-                 <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-text-main font-black rounded-xl hover:bg-white/20 transition-all">
+                 <button className="flex-1 md:flex-none px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-text-main font-black rounded-xl hover:bg-white/20 transition-all">
                     DISMISS
                  </button>
               </div>
