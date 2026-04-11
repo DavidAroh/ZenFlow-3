@@ -1,0 +1,7 @@
+{
+  "name": "ZenFlow: Peak Productivity & Wellness",
+  "description": "A comprehensive productivity and wellness suite that balances deep work with mental health tracking, featuring AI-powered burnout detection and focus optimization.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
