@@ -28,9 +28,23 @@ console.log("Spotify Config Status:", {
 });
 
 // Spotify Auth URL
+app.get("/api/spotify/config-check", (req, res) => {
+  res.json({
+    hasClientId: !!SPOTIFY_CLIENT_ID,
+    hasClientSecret: !!SPOTIFY_CLIENT_SECRET,
+    redirectUri: REDIRECT_URI,
+    nodeEnv: process.env.NODE_ENV,
+    appUrl: process.env.APP_URL
+  });
+});
+
 app.get("/api/auth/spotify/url", (req, res) => {
   if (!SPOTIFY_CLIENT_ID) {
-    return res.status(500).json({ error: "Spotify Client ID not configured" });
+    console.error("Spotify Client ID is missing from environment variables");
+    return res.status(500).json({ 
+      error: "Spotify Client ID not configured",
+      details: "Please set SPOTIFY_CLIENT_ID in your environment variables (e.g., in Vercel settings)."
+    });
   }
   const scope = "user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing";
   const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${SPOTIFY_CLIENT_ID}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
@@ -154,7 +168,13 @@ app.get("/api/spotify/me", async (req, res) => {
         return res.json(retryRes.data);
       }
     }
-    res.status(error.response?.status || 500).json(error.response?.data || { error: "Spotify API error" });
+    res.status(error.response?.status || 500).json(
+      error.response?.data || { 
+        error: "Spotify API error (Profile)", 
+        message: error.message,
+        details: "Check if your Spotify credentials are correct."
+      }
+    );
   }
 });
 
@@ -195,7 +215,12 @@ app.get("/api/spotify/player", async (req, res) => {
         return res.json(retryRes.data || { is_playing: false });
       }
     }
-    res.status(error.response?.status || 500).json(error.response?.data || { error: "Spotify API error" });
+    res.status(error.response?.status || 500).json(
+      error.response?.data || { 
+        error: "Spotify API error (Player)", 
+        message: error.message
+      }
+    );
   }
 });
 
@@ -225,7 +250,13 @@ const spotifyAction = async (req: any, res: any, method: 'post' | 'put', endpoin
     });
     res.json({ success: true });
   } catch (error: any) {
-    res.status(error.response?.status || 500).json(error.response?.data || { error: "Spotify API error" });
+    res.status(error.response?.status || 500).json(
+      error.response?.data || { 
+        error: "Spotify API error (Action)", 
+        message: error.message,
+        endpoint
+      }
+    );
   }
 };
 
