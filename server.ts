@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import axios from "axios";
 import cookieParser from "cookie-parser";
+import fs from "fs";
 
 const app = express();
 const PORT = 3000;
@@ -18,7 +19,8 @@ app.use((req, res, next) => {
 // Spotify Config
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const APP_URL = process.env.APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
+const rawAppUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null);
+const APP_URL = rawAppUrl ? rawAppUrl.replace(/\/$/, "") : null;
 const REDIRECT_URI = APP_URL ? `${APP_URL}/auth/spotify/callback` : 'http://localhost:3000/auth/spotify/callback';
 
 const checkConfig = () => {
@@ -285,8 +287,14 @@ app.post("/api/spotify/next", (req, res) => spotifyAction(req, res, 'post', 'nex
 app.post("/api/spotify/previous", (req, res) => spotifyAction(req, res, 'post', 'previous'));
 
 app.post("/api/spotify/logout", (req, res) => {
-  res.clearCookie("spotify_access_token");
-  res.clearCookie("spotify_refresh_token");
+  console.log("Spotify logout requested");
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none" as const,
+  };
+  res.clearCookie("spotify_access_token", cookieOptions);
+  res.clearCookie("spotify_refresh_token", cookieOptions);
   res.json({ success: true });
 });
 
@@ -311,7 +319,7 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    if (require('fs').existsSync(distPath)) {
+    if (fs.existsSync(distPath)) {
       app.use(express.static(distPath));
       app.get('*all', (req, res) => {
         res.sendFile(path.join(distPath, 'index.html'));
