@@ -50,6 +50,7 @@ const App: React.FC = () => {
     return 'dark';
   });
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   // Theme effect
   useEffect(() => {
@@ -194,7 +195,9 @@ const App: React.FC = () => {
   };
 
   const handleSignIn = async () => {
+    if (isSigningIn) return;
     setAuthError(null);
+    setIsSigningIn(true);
     try {
       await signInWithGoogle();
     } catch (error: any) {
@@ -203,9 +206,14 @@ const App: React.FC = () => {
         setAuthError("Google Sign-in is not enabled in your Firebase Console.");
       } else if (error.code === 'auth/unauthorized-domain') {
         setAuthError("This domain is not authorized for Firebase Authentication.");
+      } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+        // Silently ignore or show a very subtle message
+        console.log("Sign-in cancelled by user or multiple requests.");
       } else {
         setAuthError(error.message || "An error occurred during sign in.");
       }
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
@@ -290,10 +298,11 @@ const App: React.FC = () => {
 
           <button 
             onClick={handleSignIn}
-            className="w-full py-4 bg-primary hover:bg-primary-dark text-background-dark font-black rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20"
+            disabled={isSigningIn}
+            className="w-full py-4 bg-primary hover:bg-primary-dark text-background-dark font-black rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20 disabled:opacity-50"
           >
             <img src="https://www.google.com/favicon.ico" alt="Google" className="size-5" />
-            SIGN IN WITH GOOGLE
+            {isSigningIn ? 'SIGNING IN...' : 'SIGN IN WITH GOOGLE'}
           </button>
         </div>
       </div>
