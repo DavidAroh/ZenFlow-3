@@ -13,7 +13,7 @@ export class GeminiService {
   async generateDailyInsight(tasks: Task[], wellness: WellnessEntry[], logs: WorkLog[]) {
     try {
       const response = await this.ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-flash-latest',
         contents: `Based on the following user data, provide a concise wellness insight. 
         Tasks: ${JSON.stringify(tasks.map(t => ({ title: t.title, stress: t.stress })))}
         Recent Logs: ${JSON.stringify(logs.slice(0, 3))}
@@ -50,7 +50,7 @@ export class GeminiService {
   async getFocusRecommendation(currentTask: string) {
     try {
       const response = await this.ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-flash-latest',
         contents: `I am currently working on: "${currentTask}". Give me one very short focus tip (max 20 words).`,
       });
       // Fix: Access response.text as a property directly
@@ -71,7 +71,7 @@ export class GeminiService {
         Provide a concise 2-sentence recommendation.
       `;
       const response = await this.ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-flash-latest",
         contents: prompt,
       });
       return response.text || "Start with your highest priority task.";

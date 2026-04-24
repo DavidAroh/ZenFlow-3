@@ -21,7 +21,14 @@ const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const rawAppUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null);
 const APP_URL = rawAppUrl ? rawAppUrl.replace(/\/$/, "") : null;
-const REDIRECT_URI = APP_URL ? `${APP_URL}/auth/spotify/callback` : 'http://localhost:3000/auth/spotify/callback';
+
+const getRedirectUri = (req: express.Request) => {
+  if (APP_URL) return `${APP_URL}/auth/spotify/callback`;
+  // Fallback to dynamic detection for AI Studio and multi-environment support
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const host = req.get('host');
+  return `${protocol}://${host}/auth/spotify/callback`;
+};
 
 const checkConfig = () => {
   if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
@@ -37,18 +44,23 @@ const checkConfig = () => {
 console.log("Spotify Config Status:", {
   hasClientId: !!SPOTIFY_CLIENT_ID,
   hasClientSecret: !!SPOTIFY_CLIENT_SECRET,
-  redirectUri: REDIRECT_URI
+  redirectUriType: APP_URL ? "Fixed" : "Dynamic"
 });
 
 // Spotify Auth URL
 app.get("/api/spotify/config-check", (req, res) => {
+  const dynamicRedirect = getRedirectUri(req);
   res.json({
+    status: "ok",
     hasClientId: !!SPOTIFY_CLIENT_ID,
     hasClientSecret: !!SPOTIFY_CLIENT_SECRET,
-    redirectUri: REDIRECT_URI,
-    nodeEnv: process.env.NODE_ENV,
-    appUrl: process.env.APP_URL,
-    vercelUrl: process.env.VERCEL_URL
+    currentRedirectUri: dynamicRedirect,
+    COPY_THIS_TO_SPOTIFY_DASHBOARD: dynamicRedirect,
+    env: {
+      APP_URL: process.env.APP_URL,
+      VERCEL_URL: process.env.VERCEL_URL,
+      NODE_ENV: process.env.NODE_ENV
+    }
   });
 });
 
@@ -58,8 +70,10 @@ app.get("/api/auth/spotify/url", (req, res) => {
     console.error(config.error, config.details);
     return res.status(500).json(config);
   }
+  const redirectUri = getRedirectUri(req);
+  console.log("Generating Spotify Auth URL with redirect_uri:", redirectUri);
   const scope = "user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing";
-  const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${SPOTIFY_CLIENT_ID}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+  const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${SPOTIFY_CLIENT_ID}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
   res.json({ url: authUrl });
 });
 
@@ -70,12 +84,13 @@ app.get("/auth/spotify/callback", async (req, res) => {
     return res.status(400).send("No code provided");
   }
 
+  const redirectUri = getRedirectUri(req);
   try {
     const response = await axios.post("https://accounts.spotify.com/api/token", 
       new URLSearchParams({
         grant_type: "authorization_code",
         code: code as string,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: redirectUri,
         client_id: SPOTIFY_CLIENT_ID!,
         client_secret: SPOTIFY_CLIENT_SECRET!,
       }),
