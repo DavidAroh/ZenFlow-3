@@ -7,6 +7,7 @@ import fs from "fs";
 const app = express();
 const PORT = 3000;
 
+app.set('trust proxy', true);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -23,11 +24,17 @@ const rawAppUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${pr
 const APP_URL = rawAppUrl ? rawAppUrl.replace(/\/$/, "") : null;
 
 const getRedirectUri = (req: express.Request) => {
-  if (APP_URL) return `${APP_URL}/auth/spotify/callback`;
-  // Fallback to dynamic detection for AI Studio and multi-environment support
-  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  if (APP_URL) {
+    return `${APP_URL}/auth/spotify/callback`;
+  }
+  
+  const protocol = req.headers['x-forwarded-proto'] 
+    ? (req.headers['x-forwarded-proto'] as string).split(',')[0].trim() 
+    : req.protocol;
   const host = req.get('host');
-  return `${protocol}://${host}/auth/spotify/callback`;
+  const uri = `${protocol}://${host}/auth/spotify/callback`;
+  console.log(`Detected Redirect URI: ${uri}`);
+  return uri;
 };
 
 const checkConfig = () => {

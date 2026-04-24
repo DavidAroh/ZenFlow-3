@@ -29,7 +29,7 @@ const FocusTimer: React.FC = () => {
   const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
   const [spotifyError, setSpotifyError] = useState<string | null>(null);
   const [isDeepWork, setIsDeepWork] = useState(true);
-  
+
   // Fix: Use ReturnType<typeof setTimeout> instead of NodeJS.Timeout to avoid namespace issues in browser environment
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -305,29 +305,32 @@ const FocusTimer: React.FC = () => {
                </div>
              </>
            ) : (
-             <div className="flex flex-col gap-4 items-center py-2">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="size-10 rounded-full bg-[#1DB954] flex items-center justify-center">
-                    <img 
-                      src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" 
-                      alt="Spotify" 
-                      className="size-6" 
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-black text-text-main">Spotify Music</span>
-                    <span className="text-[10px] text-text-secondary">Connect your account</span>
-                  </div>
-                </div>
-                <button 
-                  onClick={handleConnectSpotify}
-                  disabled={isConnectingSpotify}
-                  className="w-full py-2 bg-[#1DB954] hover:bg-[#1ed760] text-black text-xs font-black rounded-full transition-all flex items-center justify-center gap-2"
-                >
-                  {isConnectingSpotify ? 'CONNECTING...' : 'CONNECT SPOTIFY'}
-                </button>
-             </div>
+              <div className="flex flex-col gap-4 items-center py-2">
+                 <div className="flex items-center justify-between w-full">
+                   <div className="flex items-center gap-3">
+                     <div className="size-10 rounded-full bg-[#1DB954] flex items-center justify-center">
+                       <img 
+                         src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" 
+                         alt="Spotify" 
+                         className="size-6" 
+                         referrerPolicy="no-referrer"
+                       />
+                     </div>
+                     <div className="flex flex-col text-left">
+                       <span className="text-xs font-black text-text-main">Spotify Music</span>
+                       <span className="text-[10px] text-text-secondary uppercase">Disconnected</span>
+                     </div>
+                   </div>
+                 </div>
+
+                 <button 
+                   onClick={handleConnectSpotify}
+                   disabled={isConnectingSpotify}
+                   className="w-full py-2 bg-[#1DB954] hover:bg-[#1ed760] text-black text-xs font-black rounded-full transition-all flex items-center justify-center gap-2"
+                 >
+                   {isConnectingSpotify ? 'CONNECTING...' : 'CONNECT SPOTIFY'}
+                 </button>
+              </div>
            )}
         </div>
       </aside>
